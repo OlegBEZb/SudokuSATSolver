@@ -40,7 +40,7 @@ class DPLL:
         if self.variable_selection_method == 'random':
             split_variable = self.select_random_variable(partial_assignment)
 
-        print('partial_assignment', partial_assignment, 'split_variable', split_variable)
+        print('\npartial_assignment', partial_assignment, 'split_variable', split_variable)
         clauses = self.clause_simplication(clauses, split_variable)
         partial_assignment = partial_assignment + (split_variable,)
 

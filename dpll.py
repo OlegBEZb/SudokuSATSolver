@@ -5,9 +5,10 @@ from typing import List, Tuple
 
 class DPLL:
     def __init__(self, clauses, variable_selection_method='random', verbose=0):
-        self.variables_set = set(map(str, (map(abs, chain.from_iterable(clauses)))))  # extracts unique variable from DIMACS format
+        # extracts unique variable from DIMACS format
+        self.variables_set = set(map(str, (map(abs, chain.from_iterable(clauses)))))
         # converts into internal format where each literal looks like (var_name, True)
-        self.clauses = [[(str(abs(l)), l > 0) for l in c] for c in clauses]
+        self.clauses = [[(str(abs(literal)), literal > 0) for literal in c] for c in clauses]
         self.variable_selection_method = variable_selection_method
         self.verbose = verbose
 
@@ -18,7 +19,7 @@ class DPLL:
     def select_random_variable(self, partial_assignment: List[Tuple]):
         if self.verbose:
             print('inside variable selection partial_assignment', partial_assignment)
-        already_split = set([v[0] for v in partial_assignment])
+        already_split = set([literal[0] for literal in partial_assignment])
         if self.verbose:
             print('already_split', already_split)
         return random.choice(list(self.variables_set - already_split))

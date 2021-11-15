@@ -4,7 +4,7 @@ Selected internal format:
 [(999, True), (123, False)] # second 
 ]`
 1. ~~Combine base rules with the case-specific~~
-2. Write simple tests for SAT solver (may be a nice contribution to the grade)
+2. ~~Write simple tests for SAT solver (may be a nice contribution to the grade)~~
 3. General SAT solver (clauses as input)
    1. ~~Sequentially go through the tree and return the decision + the solution if applicable~~
    2. Store output

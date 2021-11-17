@@ -62,6 +62,23 @@ class DPLL:
 
         return maxmom
 
+    def select_JW_variable(self, clauses: List[Tuple], partial_assignment):
+        new_clauses = deepcopy(clauses)
+        done = {} 
+        if self.verbose:
+            print('Jeroslow Wang variable selection' )
+            print('inside variable selection partial assignment', partial_assignment)
+            already_split = set([literal[0] for literal in partial_assignment])
+            self.variables_set = self.variables_set-already_split
+            counter = {}
+            for clause in clauses:
+                for literal in clause:
+                    if literal in counter:
+                        counter[literal] += 2 ** -len(clause)
+                    else:
+                        counter[literal] = 2 ** -len(clause)
+        return max(counter, key=counter.get)
+
 
 
 
@@ -122,6 +139,9 @@ class DPLL:
             if self.variable_selection_method == 'random':
                 split_variable = self.select_random_variable(partial_assignment)
                 print(split_variable)
+            if self.variable_selection_method == 'JW':
+                split_variable = self.select_JW_variable(clauses,partial_assignment)
+            print(split_variable)    
 
         except:
             if self.verbose:

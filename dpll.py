@@ -27,22 +27,24 @@ class DPLL:
 
     def clause_simplication(self, clauses, literal: tuple):
         new_clauses = deepcopy(clauses)
-        for d in new_clauses:
-            if len(d)==1:
-                for e in d:
-                    if e[1] == 0:
-                        d=self.neg(e)
-
         if self.verbose:
             print('before simplication', new_clauses)
+
+        # Unit rule: if a clause has only one literal, this literal with it's value should be satisfied (the unit, for example 111)
+        unitlist = []
+        for clause in new_clauses:
+            if len(clause) == 1: unitlist.append(DPLL.neg(clause[0]))
+            # so the new clauses will contain all the clauses without the negated unit (example: NOT 111 is removed from all clauses)
+        new_clauses = [[el for el in c if el not in unitlist] for c in new_clauses]
+        if self.verbose:
+            print('applied unit rule', new_clauses)
+
+        if self.verbose:
+            print('deleting unit clauses',new_clauses)
         # delete clauses containing true literals
         new_clauses = [c for c in new_clauses if literal not in c]
         if self.verbose:
             print('simplified true literals', new_clauses)
-
-
-        # if self.verbose:
-        #     print('shortened by unit rule', new_clauses)
 
         #shorten clauses containing false literals
         new_clauses = [[el for el in c if el != self.neg(literal)] for c in new_clauses]
@@ -51,7 +53,7 @@ class DPLL:
 
 
 
-        return new_clauses
+        return new_clauses, unitlist
 
     def backtrack(self, clauses, partial_assignment: List[Tuple], split_literal: tuple):
         # copying the list of tuples
@@ -60,7 +62,7 @@ class DPLL:
         if self.verbose:
             print("\nBacktrack with partial_assignment", partial_assignment, 'and split_literal', split_literal)
         if split_literal != tuple():
-            clauses = self.clause_simplication(clauses, split_literal)
+            clauses,unit_clauses = self.clause_simplication(clauses, split_literal)
             partial_assignment.append(split_literal)
 
         # An empty set of clauses is (trivially) true (conjunction: all of these have to be true)
@@ -79,7 +81,8 @@ class DPLL:
             if self.variable_selection_method == 'random':
                 split_variable = self.select_random_variable(partial_assignment)
         except:
-            print('Can not split anymore')
+            if self.verbose:
+                print('Can not split anymore')
             return False, None
         split_literal = (split_variable, False)
         sat, assignments = self.backtrack(clauses, partial_assignment, split_literal)

@@ -16,6 +16,7 @@ class DPLL:
     def neg(literal):
         return (literal[0], not literal[1])
 
+
     def select_random_variable(self, partial_assignment: List[Tuple]):
         if self.verbose:
             print('inside variable selection partial_assignment', partial_assignment)
@@ -26,16 +27,29 @@ class DPLL:
 
     def clause_simplication(self, clauses, literal: tuple):
         new_clauses = deepcopy(clauses)
+        for d in new_clauses:
+            if len(d)==1:
+                for e in d:
+                    if e[1] == 0:
+                        d=self.neg(e)
+
         if self.verbose:
             print('before simplication', new_clauses)
         # delete clauses containing true literals
         new_clauses = [c for c in new_clauses if literal not in c]
         if self.verbose:
             print('simplified true literals', new_clauses)
-        # shorten clauses containing false literals
+
+
+        # if self.verbose:
+        #     print('shortened by unit rule', new_clauses)
+
+        #shorten clauses containing false literals
         new_clauses = [[el for el in c if el != self.neg(literal)] for c in new_clauses]
         if self.verbose:
             print('shortened false literals', new_clauses)
+
+
 
         return new_clauses
 

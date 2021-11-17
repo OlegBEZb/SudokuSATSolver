@@ -1,4 +1,5 @@
 import random
+import math
 from copy import deepcopy
 from itertools import chain
 from typing import List, Tuple
@@ -16,28 +17,80 @@ class DPLL:
     def neg(literal):
         return (literal[0], not literal[1])
 
+
     def select_random_variable(self, partial_assignment: List[Tuple]):
         if self.verbose:
+            print('random variable selection')
             print('inside variable selection partial_assignment', partial_assignment)
         already_split = set([literal[0] for literal in partial_assignment])
         if self.verbose:
             print('already_split', already_split)
         return random.choice(list(self.variables_set - already_split))
 
+
+    def select_MOM_variable(self, clauses: List[Tuple],partial_assignment):
+        k=2
+        if self.verbose:
+            print('random variable selection')
+            print('inside variable selection partial_assignment', partial_assignment)
+        already_split = set([literal[0] for literal in partial_assignment])
+        self.variables_set = self.variables_set-already_split
+        k = 2
+        clauses_length = []
+        for c in clauses:
+            clauses_length.append(len(c))
+        minimum_clauses = [j for j in clauses if len(j) == min(clauses_length)]
+        momlist = []
+        for i in self.variables_set:
+            occurences_positive = 0
+            occurences_negative = 0
+            for j in minimum_clauses:
+                # print((str(i), True))
+                # print(j)
+                true_literal = (str(i), True)
+                false_literal = (str(i), False)
+                if true_literal in j:
+                    occurences_positive += 1
+                if false_literal in j:
+                    occurences_negative += 1
+            #print(occurences_positive)
+            mom = (occurences_positive + occurences_negative) * math.pow(2,k) + occurences_positive * occurences_negative
+            momlist.append(mom)
+        maxvalue=max(momlist)
+        maxmom=list(self.variables_set)[momlist.index(maxvalue)]
+        self.variables_set.remove(maxmom)
+
+        return maxmom
+
+
+
+
     def clause_simplication(self, clauses, literal: tuple):
         new_clauses = deepcopy(clauses)
         if self.verbose:
             print('before simplication', new_clauses)
+
+        # Unit rule: if a clause has only one literal, this literal with it's value should be satisfied (the unit, for example 111)
+        unitlist = []
+        for clause in new_clauses:
+            if len(clause) == 1: unitlist.append(DPLL.neg(clause[0]))
+            # so the new clauses will contain all the clauses without the negated unit (example: NOT 111 is removed from all clauses)
+        new_clauses = [[el for el in c if el not in unitlist] for c in new_clauses]
+        if self.verbose:
+            print('applied unit rule', new_clauses)
+
+        if self.verbose:
+            print('deleting unit clauses',new_clauses)
         # delete clauses containing true literals
         new_clauses = [c for c in new_clauses if literal not in c]
         if self.verbose:
             print('simplified true literals', new_clauses)
-        # shorten clauses containing false literals
+
+        #shorten clauses containing false literals
         new_clauses = [[el for el in c if el != self.neg(literal)] for c in new_clauses]
         if self.verbose:
             print('shortened false literals', new_clauses)
-
-        return new_clauses
+        return new_clauses, unitlist
 
     def backtrack(self, clauses, partial_assignment: List[Tuple], split_literal: tuple):
         # copying the list of tuples
@@ -46,8 +99,9 @@ class DPLL:
         if self.verbose:
             print("\nBacktrack with partial_assignment", partial_assignment, 'and split_literal', split_literal)
         if split_literal != tuple():
-            clauses = self.clause_simplication(clauses, split_literal)
+            clauses,unit_clauses = self.clause_simplication(clauses, split_literal)
             partial_assignment.append(split_literal)
+
 
         # An empty set of clauses is (trivially) true (conjunction: all of these have to be true)
         if len(clauses) == 0:
@@ -62,10 +116,16 @@ class DPLL:
             return False, None
 
         try:
+            if self.variable_selection_method == 'MOM':
+                split_variable = self.select_MOM_variable(clauses,partial_assignment)
+                print(split_variable)
             if self.variable_selection_method == 'random':
                 split_variable = self.select_random_variable(partial_assignment)
+                print(split_variable)
+
         except:
-            print('Can not split anymore')
+            if self.verbose:
+                print('Can not split anymore')
             return False, None
         split_literal = (split_variable, False)
         sat, assignments = self.backtrack(clauses, partial_assignment, split_literal)

@@ -22,7 +22,7 @@ Selected internal format:
 7. Hypotheses
       1. Do heuristics help significantly?
       Check out this report as an example:
-         https://www-jstor-org.vu-nl.idm.oclc.org/stable/24505021?Search=yes&resultItemClick=true&searchText=givens+sudoku&searchUri=%2Faction%2FdoBasicSearch%3FQuery%3Dgivens%2Bsudoku%26filter%3D%26so%3Drel&ab_segments=0%2Fbasic_search_gsv2%2Fcontrol&refreqid=fastly-default%3Ab2af935edf2beea27cac151357d9612f&seq=1#metadata_info_tab_contents 
+         https://www.jstor.org/stable/24505021 
       2. What is the dependency between the sudoku size and the time?
       3. Time ~ clauses num: The dependency number of clauses (= givens? = givens at starting grid?) and time 
       4. Compare with human skills: compare the difference in computational time between 2 human approaches OR 1 human approach and the random variable selection. 
@@ -30,3 +30,4 @@ Selected internal format:
          b. Human approach 2: Search for the minimal cell-possibilities of a value. For example: Look for only places where a 3 would fit in row 4. Use this to "guess" the cell i which the value is most likely to be (i guess this is statistics, choosing the highest possible cell) (Source: https://www.jstor.org/stable/10.2307/26061494)
       5. Update the rule base (optional)
       6. Minimal sudoku: smallest number of digits in starting ]grid that guarantees a unique solution (Gordon Royle: 17. No one yet proved 16). 
+      7. Adding rules: 1-9 appears once in row, column, subgrid AND color-region https://www.jstor.org/stable/25678701 

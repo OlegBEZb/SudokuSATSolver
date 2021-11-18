@@ -21,6 +21,8 @@ Selected internal format:
 6. You are free to choose any programming language you fancy, but we must be able to run your SAT solver with the command SAT -Sn inputfile , for example: SAT -S2 sudoku_nr_10 , where SAT is the (compulsory) name of your program, n=1 for the basic DP and n=2 or 3 for your two other strategies, and the input file is the concatenation of all required input clauses (in your case: sudoku rules + given puzzle). 
 7. Hypotheses
       1. Do heuristics help significantly?
+      Check out this report as an example:
+         https://www-jstor-org.vu-nl.idm.oclc.org/stable/24505021?Search=yes&resultItemClick=true&searchText=givens+sudoku&searchUri=%2Faction%2FdoBasicSearch%3FQuery%3Dgivens%2Bsudoku%26filter%3D%26so%3Drel&ab_segments=0%2Fbasic_search_gsv2%2Fcontrol&refreqid=fastly-default%3Ab2af935edf2beea27cac151357d9612f&seq=1#metadata_info_tab_contents 
       2. What is the dependency between the sudoku size and the time?
       3. Time ~ clauses num: The dependency number of clauses (= givens? = givens at starting grid?) and time 
       4. Compare with human skills: compare the difference in computational time between 2 human approaches OR 1 human approach and the random variable selection. 

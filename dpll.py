@@ -2,6 +2,8 @@ import random
 from copy import deepcopy
 from itertools import chain
 from typing import List, Tuple
+from itertools import chain
+
 
 
 class DPLL:
@@ -111,6 +113,23 @@ class DPLL:
 
         return new_clauses
 
+    def pure_literal_deletion(self, clauses, partial_assignment: List[Tuple]):
+        used_literals = set(chain.from_iterable(clauses))
+        pure_literals = {}
+        for literal in used_literals:
+            variable, value = literal
+            if variable not in pure_literals:
+                pure_literals[variable] = value
+            else:
+                del pure_literals[variable]
+
+        for variable, value in pure_literals:
+            pure_literal = (variable, value)
+            clauses = self.clause_simplication(clauses, pure_literal)
+            partial_assignment.append(pure_literal)
+
+        return clauses, partial_assignment
+
     def unit_propagate(self, clauses, partial_assignment: List[Tuple]):
         # copying for not to change them outside
         clauses = deepcopy(clauses)
@@ -142,6 +161,7 @@ class DPLL:
             partial_assignment.append(split_literal)
 
         clauses, partial_assignment = self.unit_propagate(clauses, partial_assignment)
+        clauses, partial_assignment = self.pure_literal_deletion(clauses, partial_assignment)
 
         # An empty set of clauses is (trivially) true (conjunction: all of these have to be true)
         if len(clauses) == 0:

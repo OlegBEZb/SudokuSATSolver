@@ -14,6 +14,7 @@ class DPLL:
         self.clauses = [[(str(abs(literal)), literal > 0) for literal in c] for c in clauses]
         self.variable_selection_method = variable_selection_method
         self.verbose = verbose
+        self.backtrack_counter = 0
 
     @staticmethod
     def neg(literal):
@@ -151,6 +152,7 @@ class DPLL:
         return clauses, partial_assignment
 
     def backtrack(self, clauses, partial_assignment: List[Tuple], split_literal: tuple):
+        self.backtrack_counter += 1
         # copying the list of tuples for not to change them outside
         partial_assignment = deepcopy(partial_assignment)
 

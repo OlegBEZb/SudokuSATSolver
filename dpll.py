@@ -61,6 +61,39 @@ class DPLL:
 
         return maxmom
 
+    def get_literal_occurances(self, clauses: List[Tuple], partial_assignment: List[Tuple]):
+        if self.verbose:
+            print('Jeroslow-Wang variable selection')
+            print('inside variable selection partial assignment', partial_assignment)
+        already_split = set([literal[0] for literal in partial_assignment])
+        counter = {}
+        for clause in clauses:
+            for literal in clause:
+                if literal[0] not in already_split:  # check variable
+                    if literal in counter:
+                        counter[literal] += 2 ** -len(clause)
+                    else:
+                        counter[literal] = 2 ** -len(clause)
+        return counter
+
+    def select_literal_JWOS(self, clauses: List[Tuple], partial_assignment: List[Tuple]):
+        counter = self.get_literal_occurances(clauses, partial_assignment)
+        return max(counter, key=counter.get)
+
+    def select_literal_JWTS(self, clauses: List[Tuple], partial_assignment: List[Tuple]):
+        counter = self.get_literal_occurances(clauses, partial_assignment)
+        variable_counter = {}
+        for variable in self.variables_set:
+            variable_counter[variable] = [counter.get((variable, True), 0), counter.get((variable, False), 0)]
+        max_sum_variable = max(variable_counter, key=lambda k: sum(variable_counter[k]))
+        if variable_counter[max_sum_variable][0] >= variable_counter[max_sum_variable][1]:
+            return (max_sum_variable, True)
+        else:
+            return (max_sum_variable, False)
+
+    def select_literal_MOM(self):
+        pass
+
     def clause_simplication(self, clauses, literal: tuple):
         # copying for not to change them outside
         new_clauses = deepcopy(clauses)
@@ -125,10 +158,16 @@ class DPLL:
         try:
             if self.variable_selection_method == 'random':
                 split_variable = self.select_random_variable(partial_assignment)
+                split_literal = (split_variable, False)
+            elif self.variable_selection_method == 'JWOS':
+                split_literal = self.select_literal_JWOS(clauses, partial_assignment)
+            elif self.variable_selection_method == 'JWTS':
+                split_literal = self.select_literal_JWTS(clauses, partial_assignment)
         except:
             print('Can not split anymore')
             return False, None
-        split_literal = (split_variable, False)
+
+
         sat, assignments = self.backtrack(clauses, partial_assignment, split_literal)
         if not sat:
             if self.verbose:

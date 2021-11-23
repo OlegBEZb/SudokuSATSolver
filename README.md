@@ -11,7 +11,7 @@ Selected internal format:
          1. matrix before and after
       3. Store the results / launch from command 
       4. Check compatible methods on hard cases for one
-      5. Variety in the setup. How many different values. What squares and how are filled (Oleg)
+      5. What squares and how are filled (Oleg)
       6. try to compare with human solution (Oleg)
 4. Heuristics search
       1. Start splitting from the most represented variables 

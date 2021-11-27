@@ -6,13 +6,13 @@ Selected internal format:
 1. Search for contradictions
 2. Store output and prepare the model for being launched from the command program
 3. Experimentation
-      1. time limitation for the case (3 min / 5%)
+      1. Add t-test (Oleg)
       2. Plots for the results
          1. matrix before and after
-      3. Store the results / launch from command 
-      4. Check compatible methods on hard cases for one
-      5. What squares and how are filled (Oleg)
-      6. try to compare with human solution (Oleg)
+      4. Store the results / launch from command 
+      5. Check compatible methods on hard cases for one
+      6. What squares and how are filled (Oleg)
+      7. try to compare with human solution (Oleg)
 4. Heuristics search
       1. Start splitting from the most represented variables 
          1. in the row/col

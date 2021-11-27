@@ -61,10 +61,10 @@ def get_setup_fullness(sudoku_CNF, sudoku_size):
     return col_fullness, row_fullness
 
 
-def count_assignments(partial_assignment):
-    row_assignments, col_assignments = dict((el, 0) for el in range(1, 10)), dict((el, 0) for el in range(1, 10))
+def count_assignments(partial_assignment, sudoku_size=9):
+    row_assignments, col_assignments = dict((el, 0) for el in range(1, sudoku_size+1)), dict((el, 0) for el in range(1, sudoku_size+1))
     for assignment in partial_assignment:
-        if assignment[1]:
+        if assignment[1]:  # if literal is true
             item = assignment[0]
             row_assignments[int(item[0])] += 1
             col_assignments[int(item[1])] += 1
@@ -110,3 +110,11 @@ def exit_after(s):
         return inner
 
     return outer
+
+def print_solved(found_assignments, sudoku_size):
+    matrix = np.zeros((sudoku_size, sudoku_size), dtype=int)
+    for assignment in found_assignments:
+        if assignment[1]:
+            item = assignment[0]
+            matrix[int(item[0])-1, int(item[1])-1] = int(item[2])
+    matprint(matrix)

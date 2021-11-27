@@ -4,10 +4,13 @@ from itertools import chain
 from typing import List, Tuple
 from itertools import chain
 from utils import count_assignments, get_setup_fullness
-
+import functools
+import operator
+import collections
 
 class DPLL:
-    def __init__(self, clauses, variable_selection_method='random', verbose=0):
+    def __init__(self, clauses, variable_selection_method='random', verbose=0,
+                 sudoku_size=9, row_fullness=None, col_fullness=None):
 
         self.clauses = clauses
         # extracts unique variable from DIMACS format
@@ -17,6 +20,10 @@ class DPLL:
 
         self.variable_selection_method = variable_selection_method
         self.backtrack_counter = 0
+
+        self.sudoku_size = sudoku_size
+        self.row_fullness = row_fullness
+        self.col_fullness = col_fullness
 
         self.verbose = verbose
 
@@ -70,10 +77,16 @@ class DPLL:
             print('already_split', already_split)
 
         available_variables = self.variables_set - already_split
-        row_assignments, col_assignments = count_assignments(partial_assignment)
+        row_assignments, col_assignments = count_assignments(partial_assignment, self.sudoku_size)
         if self.verbose:
-            print('in fullness based heuristic. row, col\n', row_assignments, col_assignments)
+            print(f'in fullness based heuristic. \nrow\n{row_assignments}, \ncol\n{col_assignments}')
 
+        # row_assignments = functools.reduce(operator.add, map(collections.Counter, [row_assignments, self.row_fullness]))
+        # col_assignments = functools.reduce(operator.add, map(collections.Counter, [col_assignments, self.col_fullness]))
+        # if self.verbose:
+        #     print(f'in fullness based heuristic after adjustment. \nrow\n{row_assignments}, \ncol\n{col_assignments}')
+
+        # Exclude already filled rows and cols
         row_assignments = {k: v for k, v in row_assignments.items() if v != 9}
         col_assignments = {k: v for k, v in col_assignments.items() if v != 9}
 
@@ -95,7 +108,8 @@ class DPLL:
         # print('Available variables', sorted(available_variables))
         for variable in available_variables:
             if variable[target_index] == str(target_k):
-                print("Found variable based on fullness:", variable)
+                if self.verbose:
+                    print("Found variable based on fullness:", variable)
                 return variable
         return self.select_random_variable(partial_assignment)
 
@@ -197,7 +211,7 @@ class DPLL:
 
         sat, assignments = self.backtrack(clauses, partial_assignment, split_literal)
         if not sat:
-            if self.verbose:
+            if self.verbose > 2:
                 print(
                     f"partial_assignment {partial_assignment} didn't work with split_literal {split_literal}. Try with negation")
             sat, assignments = self.backtrack(clauses, partial_assignment, self.neg(split_literal))

@@ -6,20 +6,19 @@ Selected internal format:
 1. Search for contradictions
 2. Store output and prepare the model for being launched from the command program
 3. Experimentation
-      1. Add t-test (Oleg)
-      2. Plots for the results
-         1. matrix before and after
-      4. Store the results / launch from command 
+      2. matrix before and after
+      4. launch from command 
       5. Check compatible methods on hard cases for one
       6. What squares and how are filled (Oleg)
       7. try to compare with human solution (Oleg)
 4. Heuristics search
-      1. Start splitting from the most represented variables 
+      1. Add value from the setup to the fullness
+      2. Start splitting from the most represented variables 
          1. in the row/col
-      2. Start from the most filled rows/columns/squares (Oleg)
-      3. Search for heuristics in papers (Mo)
-      4. Launch without a setup
-      5. How many givens we need. What is the dependency
+      3. Start from the most filled rows/columns/squares (Oleg)
+      4. Search for heuristics in papers (Mo)
+      5. Launch without a setup
+      6. How many givens we need. What is the dependency
          1. For each case we note the size of givens
          2. Separate exp when having a solved case, we try to solve it without one value, without two ...
 5. You are free to choose any programming language you fancy, but we must be able to run your SAT solver with the command SAT -Sn inputfile , for example: SAT -S2 sudoku_nr_10 , where SAT is the (compulsory) name of your program, n=1 for the basic DP and n=2 or 3 for your two other strategies, and the input file is the concatenation of all required input clauses (in your case: sudoku rules + given puzzle). 

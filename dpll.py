@@ -34,41 +34,6 @@ class DPLL:
             print('already_split', already_split)
         return random.choice(list(self.variables_set - already_split))
 
-    # def select_MOM_variable(self, clauses: List[Tuple], partial_assignment):
-    #     k = 2
-    #     if self.verbose:
-    #         print('MOM variable selection')
-    #         print('inside MOM variable selection partial_assignment', partial_assignment)
-    #     already_split = set([literal[0] for literal in partial_assignment])
-    #     self.variables_set = self.variables_set - already_split
-    #     k = 2
-    #     clauses_length = []
-    #     for c in clauses:
-    #         clauses_length.append(len(c))
-    #     minimum_clauses = [j for j in clauses if len(j) == min(clauses_length)]
-    #     momlist = []
-    #     for i in self.variables_set:
-    #         occurences_positive = 0
-    #         occurences_negative = 0
-    #         for j in minimum_clauses:
-    #             # print((str(i), True))
-    #             # print(j)
-    #             true_literal = (str(i), True)
-    #             false_literal = (str(i), False)
-    #             if true_literal in j:
-    #                 occurences_positive += 1
-    #             if false_literal in j:
-    #                 occurences_negative += 1
-    #         # print(occurences_positive)
-    #         mom = (occurences_positive + occurences_negative) * math.pow(2,
-    #                                                                      k) + occurences_positive * occurences_negative
-    #         momlist.append(mom)
-    #     maxvalue = max(momlist)
-    #     maxmom = list(self.variables_set)[momlist.index(maxvalue)]
-    #     self.variables_set.remove(maxmom)
-    #
-    #     return maxmom
-
     def get_literal_occurances(self, clauses: List[Tuple], partial_assignment: List[Tuple]):
         if self.verbose:
             print('Jeroslow-Wang variable selection')

@@ -23,6 +23,8 @@ def run_experiment(setups_path,
                   verbose=verbose,
                   sudoku_size=sudoku_size)
 
+    print(f"Having {len(solver.clauses)} clauses")
+
     start = time.time()
     solution = solver.backtrack(solver.clauses, partial_assignment=[], split_literal=tuple())
     solution_time = time.time() - start
@@ -41,7 +43,7 @@ def run_experiment(setups_path,
 heuristics_mapping = {'-S1': 'random', '-S2': 'fullness', '-S3': 'JWVSIDS'}
 
 if __name__ == "__main__":
-    sys.setrecursionlimit(1500)
+    sys.setrecursionlimit(30000)
 
     heuristic, filename = sys.argv[1:]
     solution = run_experiment(filename,

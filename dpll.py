@@ -134,6 +134,7 @@ class DPLL:
         return new_clauses
 
     def pure_literal_deletion(self, clauses, partial_assignment: List[Tuple]):
+        clauses = clauses.copy()
         used_literals = set(chain.from_iterable(clauses))
         pure_literals = {}
         for literal in used_literals:
@@ -153,7 +154,9 @@ class DPLL:
     def unit_propagate(self, clauses, partial_assignment: List[Tuple]):
         # https: // en.wikipedia.org / wiki / Unit_propagation
         # copying for not to change them outside
-        clauses = deepcopy(clauses)
+        # clauses = deepcopy(clauses)
+        clauses = clauses.copy()
+
 
         unit_literal = True
         while unit_literal:
@@ -174,7 +177,8 @@ class DPLL:
     def backtrack(self, clauses, partial_assignment: List[Tuple], split_literal: tuple):
         self.backtrack_counter += 1
         # copying the list of tuples for not to change them outside
-        partial_assignment = deepcopy(partial_assignment)
+        # partial_assignment = deepcopy(partial_assignment)
+        partial_assignment = partial_assignment.copy()
 
         if self.verbose > 2:
             print("\nBacktrack with partial_assignment", partial_assignment, 'and split_literal', split_literal)

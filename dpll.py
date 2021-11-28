@@ -10,7 +10,7 @@ import collections
 
 class DPLL:
     def __init__(self, clauses, variable_selection_method='random', verbose=0,
-                 sudoku_size=9, row_fullness=None, col_fullness=None):
+                 sudoku_size=9):
 
         self.clauses = clauses
         # extracts unique variable from DIMACS format
@@ -25,9 +25,6 @@ class DPLL:
         self.backtrack_counter = 0
 
         self.sudoku_size = sudoku_size
-        self.row_fullness = row_fullness
-        self.col_fullness = col_fullness
-
         self.verbose = verbose
 
     @staticmethod
@@ -90,16 +87,11 @@ class DPLL:
         if self.verbose:
             print(f'in fullness based heuristic. \nrow\n{row_assignments}, \ncol\n{col_assignments}')
 
-        # row_assignments = functools.reduce(operator.add, map(collections.Counter, [row_assignments, self.row_fullness]))
-        # col_assignments = functools.reduce(operator.add, map(collections.Counter, [col_assignments, self.col_fullness]))
-        # if self.verbose:
-        #     print(f'in fullness based heuristic after adjustment. \nrow\n{row_assignments}, \ncol\n{col_assignments}')
-
         # Exclude already filled rows and cols
         # TODO: if there are 8 values in the row/col, not only the variable
         #  but its value is predefined as well
-        row_assignments = {k: v for k, v in row_assignments.items() if v != 9}
-        col_assignments = {k: v for k, v in col_assignments.items() if v != 9}
+        row_assignments = {k: v for k, v in row_assignments.items() if v != self.sudoku_size}
+        col_assignments = {k: v for k, v in col_assignments.items() if v != self.sudoku_size}
 
         max_row_key = max(row_assignments, key=row_assignments.get)
         max_col_key = max(col_assignments, key=col_assignments.get)

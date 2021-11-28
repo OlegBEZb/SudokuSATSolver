@@ -68,10 +68,12 @@ class DPLL:
         for variable in self.variables_set:
             if confl:
                 prev_conflicts = self.conflicts[variable]
+                decay = 0.95 ** (self.backtrack_counter % 10)
             else:
                 prev_conflicts = 0
-            variable_counter[variable] = [counter.get((variable, True), 0) + prev_conflicts,
-                                          counter.get((variable, False), 0) + prev_conflicts]
+                decay = 1
+            variable_counter[variable] = [(counter.get((variable, True), 0) + prev_conflicts) * decay,
+                                          (counter.get((variable, False), 0) + prev_conflicts) * decay]
         max_sum_variable = max(variable_counter, key=lambda k: sum(variable_counter[k]))
         if variable_counter[max_sum_variable][0] >= variable_counter[max_sum_variable][1]:
             return (max_sum_variable, True)
@@ -193,17 +195,17 @@ class DPLL:
 
         # An empty set of clauses is (trivially) true (conjunction: all of these have to be true)
         if len(clauses) == 0:
-            if self.verbose:
+            if self.verbose > 1:
                 print('Empty set of clauses')
             return True, partial_assignment
 
         # An empty clause is (trivially) false (disjunction: at least one of these must be true)
         if any([len(c) == 0 for c in clauses]):
-            if self.verbose:
+            if self.verbose > 1:
                 print("Empty clause")
             if self.variable_selection_method == 'JWVSIDS':
                 self.conflicts[split_literal[0]] += 1
-                if self.verbose:
+                if self.verbose > 3:
                     print('self.conflicts\n', {k: v for k, v in self.conflicts.items() if v != 0})
             return False, None
 

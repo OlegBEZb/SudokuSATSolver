@@ -29,8 +29,9 @@ Selected internal format:
          a. Human approach 1: search for most contstraint empty cells: Start with a cell in a row/column/subgrid that has the least empty cells. 
          b. Human approach 2: Search for the minimal cell-possibilities of a value. For example: Look for only places where a 3 would fit in row 4. Use this to "guess" the cell i which the value is most likely to be (i guess this is statistics, choosing the highest possible cell) (Source: https://www.jstor.org/stable/10.2307/26061494)
       5. Update the rule base (optional)
-      6. Minimal sudoku: smallest number of digits in starting grid that guarantees a unique solution (Gordon Royle: 17. No one yet proved 16). 
-      7. Adding rules: 1-9 appears once in row, column, subgrid AND color-region https://www.jstor.org/stable/25678701
-      8. Do heuristics help significantly?
+      6. Is sorting of heuristics according to their length helpful?
+      7. Minimal sudoku: smallest number of digits in starting grid that guarantees a unique solution (Gordon Royle: 17. No one yet proved 16). 
+      8. Adding rules: 1-9 appears once in row, column, subgrid AND color-region https://www.jstor.org/stable/25678701
+      9. Do heuristics help significantly?
       Check out this report as an example:
          https://www.jstor.org/stable/24505021 

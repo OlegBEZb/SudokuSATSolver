@@ -19,6 +19,9 @@ class DPLL:
         self.clauses = [[(str(abs(literal)), literal > 0) for literal in c] for c in self.clauses]
 
         self.variable_selection_method = variable_selection_method
+        if self.variable_selection_method == 'JWVSIDS':
+            self.conflicts = dict.fromkeys(self.variables_set, 0)
+
         self.backtrack_counter = 0
 
         self.sudoku_size = sudoku_size
@@ -42,8 +45,7 @@ class DPLL:
         return random.choice(list(self.variables_set - already_split))
 
     def get_literal_occurances(self, clauses: List[Tuple], partial_assignment: List[Tuple]):
-        if self.verbose:
-            print('Jeroslow-Wang variable selection')
+        if self.verbose > 2:
             print('inside variable selection partial assignment', partial_assignment)
         already_split = set([literal[0] for literal in partial_assignment])
         counter = {}
@@ -60,11 +62,16 @@ class DPLL:
         counter = self.get_literal_occurances(clauses, partial_assignment)
         return max(counter, key=counter.get)
 
-    def select_literal_JWTS(self, clauses: List[Tuple], partial_assignment: List[Tuple]):
+    def select_literal_JWTS(self, clauses: List[Tuple], partial_assignment: List[Tuple], confl=False):
         counter = self.get_literal_occurances(clauses, partial_assignment)
         variable_counter = {}
         for variable in self.variables_set:
-            variable_counter[variable] = [counter.get((variable, True), 0), counter.get((variable, False), 0)]
+            if confl:
+                prev_conflicts = self.conflicts[variable]
+            else:
+                prev_conflicts = 0
+            variable_counter[variable] = [counter.get((variable, True), 0) + prev_conflicts,
+                                          counter.get((variable, False), 0) + prev_conflicts]
         max_sum_variable = max(variable_counter, key=lambda k: sum(variable_counter[k]))
         if variable_counter[max_sum_variable][0] >= variable_counter[max_sum_variable][1]:
             return (max_sum_variable, True)
@@ -87,6 +94,8 @@ class DPLL:
         #     print(f'in fullness based heuristic after adjustment. \nrow\n{row_assignments}, \ncol\n{col_assignments}')
 
         # Exclude already filled rows and cols
+        # TODO: if there are 8 values in the row/col, not only the variable
+        #  but its value is predefined as well
         row_assignments = {k: v for k, v in row_assignments.items() if v != 9}
         col_assignments = {k: v for k, v in col_assignments.items() if v != 9}
 
@@ -148,6 +157,7 @@ class DPLL:
         return clauses, partial_assignment
 
     def unit_propagate(self, clauses, partial_assignment: List[Tuple]):
+        # https: // en.wikipedia.org / wiki / Unit_propagation
         # copying for not to change them outside
         clauses = deepcopy(clauses)
 
@@ -191,6 +201,10 @@ class DPLL:
         if any([len(c) == 0 for c in clauses]):
             if self.verbose:
                 print("Empty clause")
+            if self.variable_selection_method == 'JWVSIDS':
+                self.conflicts[split_literal[0]] += 1
+                if self.verbose:
+                    print('self.conflicts\n', {k: v for k, v in self.conflicts.items() if v != 0})
             return False, None
 
         try:
@@ -204,6 +218,8 @@ class DPLL:
                 split_literal = self.select_literal_JWOS(clauses, partial_assignment)
             elif self.variable_selection_method == 'JWTS':
                 split_literal = self.select_literal_JWTS(clauses, partial_assignment)
+            elif self.variable_selection_method == 'JWVSIDS':
+                split_literal = self.select_literal_JWTS(clauses, partial_assignment, confl=True)
         except:
             # print('Can not split anymore')
             # return False, None

@@ -62,10 +62,10 @@ class DPLL:
     def select_literal_JWTS(self, clauses: List[Tuple], partial_assignment: List[Tuple], confl=False):
         counter = self.get_literal_occurances(clauses, partial_assignment)
         variable_counter = {}
-        for variable in self.variables_set:
+        for variable in set([k[0] for k in list(counter.keys())]):  # get_literal_occurances returns only available variable literals
             if confl:
                 prev_conflicts = self.conflicts[variable]
-                decay = 0.95 ** (self.backtrack_counter % 10)
+                decay = 0.99 ** (self.backtrack_counter % 10)
             else:
                 prev_conflicts = 0
                 decay = 1

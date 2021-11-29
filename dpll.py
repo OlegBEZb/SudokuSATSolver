@@ -118,7 +118,8 @@ class DPLL:
 
     def clause_simplication(self, clauses, literal: tuple):
         # copying for not to change them outside
-        new_clauses = deepcopy(clauses)
+        # new_clauses = deepcopy(clauses)
+        new_clauses = clauses.copy()
 
         if self.verbose > 2:
             print('before simplication', new_clauses)
@@ -156,7 +157,6 @@ class DPLL:
         # copying for not to change them outside
         # clauses = deepcopy(clauses)
         clauses = clauses.copy()
-
 
         unit_literal = True
         while unit_literal:
@@ -218,6 +218,8 @@ class DPLL:
                 split_literal = self.select_literal_JWTS(clauses, partial_assignment)
             elif self.variable_selection_method == 'JWVSIDS':
                 split_literal = self.select_literal_JWTS(clauses, partial_assignment, confl=True)
+            else:
+                raise ValueError("variable_selection_method is assigned wrong!")
         except:
             # print('Can not split anymore')
             # return False, None

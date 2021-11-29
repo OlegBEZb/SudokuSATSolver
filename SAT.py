@@ -2,8 +2,6 @@ import sys
 import os
 import time
 
-import pandas as pd
-
 from dpll import DPLL
 from utils import read_DIMACS, save_solution2DIMACS
 
@@ -13,9 +11,6 @@ def run_experiment(setups_path,
                    verbose=0):
     clauses = read_DIMACS(setups_path)
 
-    results_df = pd.DataFrame()
-
-    # givens, givens_num, row_fullness, col_fullness = get_setup_info(sudoku, sudoku_setup_CNF, sudoku_size)
     sudoku_size = 9
 
     solver = DPLL(clauses,
@@ -28,27 +23,20 @@ def run_experiment(setups_path,
     start = time.time()
     solution = solver.backtrack(solver.clauses, partial_assignment=[], split_literal=tuple())
     solution_time = time.time() - start
+    print(f"Solved in {solution_time} sec")
 
     return solution
-
-    # results_df.loc[
-    #     len(results_df), ['setups_path', 'givens', 'givens_num', 'row_fullness',
-    #                       'col_fullness', 'variable_selection_method', 'sat', 'solution', 'time_limit', 'time',
-    #                       'backtracks']] = setups_path, givens, givens_num, row_fullness, col_fullness, variable_selection_method, *solution, time_limit, solution_time, solver.backtrack_counter
-    #
-    #
-    # return results_df
 
 
 heuristics_mapping = {'-S1': 'random', '-S2': 'fullness', '-S3': 'JWVSIDS'}
 
 if __name__ == "__main__":
-    sys.setrecursionlimit(30000)
+    sys.setrecursionlimit(10000)
 
     heuristic, filename = sys.argv[1:]
     solution = run_experiment(filename,
-                              variable_selection_method=heuristic,
+                              variable_selection_method=heuristics_mapping[heuristic],
                               verbose=0)
     save_filename = list(os.path.splitext(filename))
-    save_filename.insert(len(save_filename)-1, '_solution')
+    save_filename.insert(len(save_filename) - 1, '_solution')
     save_solution2DIMACS(solution[1], ''.join(save_filename))
